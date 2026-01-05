@@ -53,4 +53,28 @@ public class CharacterSelectManager : MonoBehaviour
         // Example: Load your first game level
         SceneManager.LoadScene("Level 1");
     }
+
+    //funtion to clear selection
+    public void ClearSelection()
+    {
+        selectedCharacter = null;
+
+        // Clear UI
+        if (portraitImage != null) portraitImage.sprite = null;
+        if (nameText != null) nameText.text = "";
+        if (descriptionText != null) descriptionText.text = "";
+
+        // Clear PlayerPrefs
+        PlayerPrefs.DeleteKey("SelectedCharacter");
+        PlayerPrefs.Save();
+
+        Debug.Log("Character selection cleared.");
+    }
+
+    //just like clear selection but happens when player presses esc to go back to main menu
+    public void OnBackToMainMenu()
+    {
+        ClearSelection();
+        SceneManager.LoadScene("MainMenu");
+    }
 }
