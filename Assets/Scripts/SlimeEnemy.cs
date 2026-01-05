@@ -24,7 +24,7 @@ public class SlimeEnemy : MonoBehaviour
         jumpTimer = jumpInterval;
     }
 
-     void Update()
+    void Update()
     {
         if (targetPoint == null) return;
 
@@ -67,4 +67,5 @@ public class SlimeEnemy : MonoBehaviour
             Gizmos.DrawLine(pointA.position, pointB.position);
         }
     }
+
 }

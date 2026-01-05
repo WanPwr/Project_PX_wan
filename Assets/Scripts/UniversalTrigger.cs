@@ -33,4 +33,4 @@ public class UniversalTrigger : MonoBehaviour
             Debug.Log("Universal Trigger Activated!");
         }
     }
-}
+}   
