@@ -77,4 +77,17 @@ public class CharacterSelectManager : MonoBehaviour
         ClearSelection();
         SceneManager.LoadScene("MainMenu");
     }
+
+    //a function to debug the current selected character
+    public void DebugSelectedCharacter()
+    {
+        if (selectedCharacter != null)
+        {
+            Debug.Log($"Currently Selected Character: {selectedCharacter.characterName}");
+        }
+        else
+        {
+            Debug.Log("No character currently selected.");
+        }
+    }
 }
