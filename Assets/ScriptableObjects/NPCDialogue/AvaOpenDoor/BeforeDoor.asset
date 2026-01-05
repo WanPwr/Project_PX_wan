@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcbf41069984956439c6e2410f5d1d2a, type: 3}
+  m_Name: BeforeDoor
+  m_EditorClassIdentifier: 
+  conversation:
+  - characterName: Joe
+    characterPortrait: {fileID: 110063094613122208, guid: 01f0346709856c14ca9fa1385a55e092, type: 3}
+    text: Hi, Ava.
+  - characterName: Ava
+    characterPortrait: {fileID: -2275656376681654536, guid: 0ba6ae71c7a419947a1054947a86cd47, type: 3}
+    text: Hi, Joe.
+  givesQuest: 0
+  questItemName: 
+  questAmount: 0
+  questDescription: 

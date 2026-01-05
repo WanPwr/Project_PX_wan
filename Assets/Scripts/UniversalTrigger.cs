@@ -8,67 +8,48 @@ public class UniversalTrigger : MonoBehaviour
     public DoorScript door;
 
     [Header("Trigger Settings")]
-    [Tooltip("If true, you MUST press K. If false, it triggers as soon as you touch it.")]
     public bool isInteractable = false;
-
-    [Tooltip("If true, this can only be activated once.")]
     public bool triggerOnlyOnce = false;
 
     private bool hasTriggered = false;
     private bool playerInZone = false;
+
+    // --- ADD THIS FUNCTION TO FIX THE ERROR ---
+    public void Interact()
+    {
+        ExecuteTriggerActions();
+    }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
         {
             playerInZone = true;
-
-            // ONLY trigger on touch if isInteractable is FALSE
-            if (!isInteractable)
-            {
-                ExecuteTriggerActions();
-            }
+            if (!isInteractable) ExecuteTriggerActions();
         }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag("Player"))
-        {
-            playerInZone = false;
-        }
+        if (other.CompareTag("Player")) playerInZone = false;
     }
 
     void Update()
     {
-        // Check for 'K' press ONLY if we are interactable and player is nearby
-        if (isInteractable && playerInZone)
+        if (isInteractable && playerInZone && Input.GetKeyDown(KeyCode.K))
         {
-            if (Input.GetKeyDown(KeyCode.K))
-            {
-                ExecuteTriggerActions();
-            }
+            ExecuteTriggerActions();
         }
     }
 
     private void ExecuteTriggerActions()
     {
-        // Stop if it's a one-time thing and already done
         if (triggerOnlyOnce && hasTriggered) return;
 
-        // 1. Toggle Platform
-        if (movingPlatform != null)
-            movingPlatform.enabled = !movingPlatform.enabled;
-
-        // 2. Activate Trap
-        if (spikeTrap != null)
-            spikeTrap.ActivateTrap();
-
-        // 3. Open Door
-        if (door != null)
-            door.OpenDoor();
+        if (movingPlatform != null) movingPlatform.enabled = !movingPlatform.enabled;
+        if (spikeTrap != null) spikeTrap.ActivateTrap();
+        if (door != null) door.OpenDoor();
 
         hasTriggered = true;
-        Debug.Log("Action executed via " + (isInteractable ? "Interaction (K)" : "Touch"));
     }
 }

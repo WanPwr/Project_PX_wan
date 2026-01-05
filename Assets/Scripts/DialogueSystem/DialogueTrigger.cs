@@ -3,9 +3,14 @@ using UnityEngine;
 public class DialogueTrigger : MonoBehaviour
 {
     [Header("Conversation Phases")]
-    public DialogueData questGiverDialogue; // Plays the first time
-    public DialogueData inProgressDialogue; // Plays while player is hunting
-    public DialogueData completedDialogue;  // Plays when items are collected
+    public DialogueData questGiverDialogue;
+    public DialogueData inProgressDialogue;
+    public DialogueData completedDialogue;
+
+    [Header("Quest Rewards")]
+    [Tooltip("Drag the Door or the UniversalTrigger here to unlock it!")]
+    public DoorScript doorToOpen;
+    public UniversalTrigger triggerToActivate;
 
     [Header("References")]
     public DialogueManager manager;
@@ -29,31 +34,38 @@ public class DialogueTrigger : MonoBehaviour
         LevelGoal goal = Object.FindFirstObjectByType<LevelGoal>();
         PlayerInventory inv = Object.FindFirstObjectByType<PlayerInventory>();
 
-        // PHASE 1: Start the Quest
         if (!hasStartedQuest)
         {
             manager.StartDialogue(questGiverDialogue);
             hasStartedQuest = true;
         }
-        // PHASE 2: Check for Completion
         else if (hasStartedQuest && !hasFinishedQuest)
         {
-            // Check if player has the required amount of the target item
             if (goal != null && inv != null && inv.GetItemCount(goal.targetItem) >= goal.neededAmount)
             {
                 manager.StartDialogue(completedDialogue);
                 hasFinishedQuest = true;
 
-                // Tell the objective board to slide away now that NPC is happy
+                // --- NEW: UNLOCK THE DOOR ---
+                if (doorToOpen != null)
+                {
+                    doorToOpen.OpenDoor();
+                }
+
+                // --- OR ACTIVATE A UNIVERSAL TRIGGER ---
+                if (triggerToActivate != null)
+                {
+                    // This will flip the platform or activate whatever is linked
+                    triggerToActivate.Interact();
+                }
+
                 goal.ClearObjective();
             }
             else
             {
-                // Player doesn't have enough items yet
                 manager.StartDialogue(inProgressDialogue);
             }
         }
-        // PHASE 3: Quest is already done (Generic Thank You)
         else
         {
             manager.StartDialogue(completedDialogue);
@@ -62,6 +74,7 @@ public class DialogueTrigger : MonoBehaviour
         if (promptUI != null) promptUI.SetActive(false);
     }
 
+    // ... OnTriggerEnter2D and OnTriggerExit2D stay the same ...
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))
