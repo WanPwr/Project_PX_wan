@@ -122,11 +122,19 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Don't move if attacking OR in dialogue
         if (isAttacking || isLockedByDialogue) return;
 
-        // --- HORIZONTAL MOVEMENT ---
         float targetSpeed = (isRunning ? runSpeed : walkSpeed) * moveInput;
+
+        // --- THE FIX ---
+        // If there is no input and we are parented to something (like a platform), 
+        // let the physics engine/parenting handle the horizontal movement.
+        if (Mathf.Abs(moveInput) < 0.01f && transform.parent != null)
+        {
+            // We do nothing here, allowing the platform's movement to carry us
+            return;
+        }
+
         float speedDiff = targetSpeed - rb.linearVelocity.x;
         float accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? acceleration : acceleration * 2;
         float movement = speedDiff * accelRate * Time.fixedDeltaTime;
@@ -138,12 +146,7 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
         }
-        else if (rb.linearVelocity.y > 0 && !Input.GetButton("Jump"))
-        {
-            rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (lowJumpMultiplier - 1) * Time.fixedDeltaTime;
-        }
     }
-
     void Flip()
     {
         facingRight = !facingRight;
