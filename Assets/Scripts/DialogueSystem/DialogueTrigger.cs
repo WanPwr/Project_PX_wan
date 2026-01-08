@@ -25,6 +25,20 @@ public class DialogueTrigger : MonoBehaviour
     {
         if (isPlayerInRange && Input.GetKeyDown(interactionKey))
         {
+            // --- THE FIX ---
+            // 1. Find the player
+            PlayerMovement player = Object.FindFirstObjectByType<PlayerMovement>();
+
+            if (player != null && player.isLockedByDialogue)
+            {
+                // 2. If already talking, don't restart dialogue! 
+                // Instead, tell the player script to show the error message.
+                // Note: We need a public method in PlayerMovement for this, 
+                // or just let PlayerMovement's own Update handle the detection.
+                return;
+            }
+
+            // 3. If NOT locked, proceed with normal talk
             CheckQuestStatusAndTalk();
         }
     }
@@ -46,18 +60,8 @@ public class DialogueTrigger : MonoBehaviour
                 manager.StartDialogue(completedDialogue);
                 hasFinishedQuest = true;
 
-                // --- NEW: UNLOCK THE DOOR ---
-                if (doorToOpen != null)
-                {
-                    doorToOpen.OpenDoor();
-                }
-
-                // --- OR ACTIVATE A UNIVERSAL TRIGGER ---
-                if (triggerToActivate != null)
-                {
-                    // This will flip the platform or activate whatever is linked
-                    triggerToActivate.Interact();
-                }
+                if (doorToOpen != null) doorToOpen.OpenDoor();
+                if (triggerToActivate != null) triggerToActivate.Interact();
 
                 goal.ClearObjective();
             }
@@ -74,7 +78,6 @@ public class DialogueTrigger : MonoBehaviour
         if (promptUI != null) promptUI.SetActive(false);
     }
 
-    // ... OnTriggerEnter2D and OnTriggerExit2D stay the same ...
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.CompareTag("Player"))

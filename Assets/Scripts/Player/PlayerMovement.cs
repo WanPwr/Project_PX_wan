@@ -3,7 +3,6 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D), typeof(Animator))]
 public class PlayerMovement : MonoBehaviour
 {
-    // --- NEW DIALOGUE SETTING ---
     [HideInInspector] public bool isLockedByDialogue = false;
 
     [Header("Movement")]
@@ -22,9 +21,11 @@ public class PlayerMovement : MonoBehaviour
     public Transform groundCheck;
     public float groundCheckRadius = 0.2f;
     public LayerMask groundLayer;
-
-    [Header("Landing Threshold")]
     public float landingThreshold = 0.1f;
+
+    [Header("UI Popups")]
+    public GameObject movementWarningUI; // Drag your "Error Message" UI Panel/Text here
+    public float warningDuration = 1.5f;
 
     [Header("Attack Settings")]
     public KeyCode attackKey = KeyCode.J;
@@ -33,7 +34,6 @@ public class PlayerMovement : MonoBehaviour
     private bool isAttacking = false;
     private Rigidbody2D rb;
     private Animator anim;
-    private SpriteRenderer sr;
     private float moveInput;
     private bool isRunning;
     private bool isGrounded;
@@ -43,23 +43,37 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        sr = GetComponent<SpriteRenderer>();
+
+        // Hide warning at start
+        if (movementWarningUI != null) movementWarningUI.SetActive(false);
     }
 
     void Update()
     {
-        // --- DIALOGUE LOCK CHECK ---
-        // If talking, we kill all input and stop horizontal velocity
+        // --- DIALOGUE LOCK CHECK & WARNING LOGIC ---
         if (isLockedByDialogue)
         {
+            // Check for A, D (Horizontal Axis) or specific keys J, K, L, or Jump
+            bool triedToMove = Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0.1f;
+            bool triedToAction = Input.GetKeyDown(KeyCode.J) ||
+                                 Input.GetKeyDown(KeyCode.K) ||
+                                 Input.GetKeyDown(KeyCode.L) ||
+                                 Input.GetButtonDown("Jump");
+
+            if (triedToMove || triedToAction)
+            {
+                ShowMovementWarning();
+            }
+
+            // Stop all movement while locked
             moveInput = 0;
             isRunning = false;
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
             anim.SetFloat("Speed", 0);
-            return; // Skip the rest of the update
+            return; // Important: Stops the rest of the script from running
         }
 
-        // --- GROUND CHECK ---
+        // --- NORMAL GROUND CHECK ---
         isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
 
         if (isGrounded && Mathf.Abs(rb.linearVelocity.y) < landingThreshold)
@@ -72,16 +86,11 @@ public class PlayerMovement : MonoBehaviour
             anim.SetBool("isGrounded", false);
         }
 
-        // --- INPUT (Disabled during attack) ---
+        // --- NORMAL INPUT ---
         if (!isAttacking)
         {
             moveInput = Input.GetAxisRaw("Horizontal");
             isRunning = Input.GetKey(KeyCode.LeftShift);
-        }
-        else
-        {
-            moveInput = 0;
-            isRunning = false;
         }
 
         // --- ATTACK ---
@@ -107,7 +116,7 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
-        // --- FLIP CHARACTER ---
+        // --- FLIP ---
         if (!isAttacking)
         {
             if (moveInput > 0 && !facingRight) Flip();
@@ -117,7 +126,6 @@ public class PlayerMovement : MonoBehaviour
         // --- ANIMATOR ---
         anim.SetFloat("Speed", Mathf.Abs(rb.linearVelocity.x));
         anim.SetFloat("VelocityY", rb.linearVelocity.y);
-        anim.speed = isRunning ? 1.6f : 1f;
     }
 
     void FixedUpdate()
@@ -126,14 +134,8 @@ public class PlayerMovement : MonoBehaviour
 
         float targetSpeed = (isRunning ? runSpeed : walkSpeed) * moveInput;
 
-        // --- THE FIX ---
-        // If there is no input and we are parented to something (like a platform), 
-        // let the physics engine/parenting handle the horizontal movement.
-        if (Mathf.Abs(moveInput) < 0.01f && transform.parent != null)
-        {
-            // We do nothing here, allowing the platform's movement to carry us
-            return;
-        }
+        // Parenting/Platform Logic
+        if (Mathf.Abs(moveInput) < 0.01f && transform.parent != null) return;
 
         float speedDiff = targetSpeed - rb.linearVelocity.x;
         float accelRate = (Mathf.Abs(targetSpeed) > 0.01f) ? acceleration : acceleration * 2;
@@ -141,16 +143,35 @@ public class PlayerMovement : MonoBehaviour
 
         rb.linearVelocity = new Vector2(rb.linearVelocity.x + movement, rb.linearVelocity.y);
 
-        // --- BETTER FALL ---
         if (rb.linearVelocity.y < 0)
         {
             rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
         }
     }
+
+    private void ShowMovementWarning()
+    {
+        if (movementWarningUI != null)
+        {
+            movementWarningUI.SetActive(true);
+            CancelInvoke("HideWarning");
+            Invoke("HideWarning", warningDuration);
+            Debug.Log("Movement is locked during dialogue!");
+        }
+        else
+        {
+            Debug.LogWarning("Movement warning UI is not assigned!");
+        }
+    }
+
+    private void HideWarning()
+    {
+        if (movementWarningUI != null) movementWarningUI.SetActive(false);
+    }
+
     void Flip()
     {
         facingRight = !facingRight;
-        // Optimization: Flipping the transform scale is better if you have hitboxes attached
         Vector3 scaler = transform.localScale;
         scaler.x *= -1;
         transform.localScale = scaler;
@@ -160,27 +181,6 @@ public class PlayerMovement : MonoBehaviour
     {
         isAttacking = false;
         anim.SetBool("isAttacking", false);
-        DeActivateHitbox();
-    }
-
-    public void ActivateHitbox()
-    {
-        if (attackHitbox != null)
-            attackHitbox.SetActive(true);
-    }
-
-    public void DeActivateHitbox()
-    {
-        if (attackHitbox != null)
-            attackHitbox.SetActive(false);
-    }
-
-    void OnDrawGizmosSelected()
-    {
-        if (groundCheck != null)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(groundCheck.position, groundCheckRadius);
-        }
+        if (attackHitbox != null) attackHitbox.SetActive(false);
     }
 }
