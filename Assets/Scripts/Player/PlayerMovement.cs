@@ -30,6 +30,11 @@ public class PlayerMovement : MonoBehaviour
     public KeyCode attackKey = KeyCode.J;
     public GameObject attackHitbox;
 
+    [Header("Audio Settings")]
+    public AudioClip jumpSound;
+    public AudioClip attackSound;
+    public AudioClip movementSound;
+
     private bool isAttacking = false;
     private Rigidbody2D rb;
     private Animator anim;
