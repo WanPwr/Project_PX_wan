@@ -51,7 +51,7 @@ public class CharacterSelectManager : MonoBehaviour
         }
 
         // Example: Load your first game level
-        SceneManager.LoadScene("Level 1");
+        SceneManager.LoadScene("TRY2");
     }
 
     //funtion to clear selection

@@ -3,26 +3,28 @@ using UnityEngine;
 public class Hazard : MonoBehaviour
 {
     [Header("Settings")]
-    public SimpleSpawner spawner;
+    public PlayerSpawner spawner; // Changed from SimpleSpawner to PlayerSpawner
 
     private void Start()
     {
+        // Automatically find the spawner in the scene if not assigned
         if (spawner == null)
         {
-            spawner = Object.FindFirstObjectByType<SimpleSpawner>();
+            spawner = Object.FindFirstObjectByType<PlayerSpawner>();
         }
     }
 
-    // IMPORTANT: Note the '2D' in the function name and parameter
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("2D Trigger hit by: " + other.name);
-
         if (other.CompareTag("Player"))
         {
             if (spawner != null)
             {
                 spawner.SpawnPlayer();
+            }
+            else
+            {
+                Debug.LogWarning("Hazard: No PlayerSpawner found in scene!");
             }
         }
     }
