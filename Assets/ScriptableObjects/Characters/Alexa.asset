@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ffacb21173a82948a0cfdda62ea0a3d, type: 3}
-  m_Name: Jeanie
+  m_Name: Alexa
   m_EditorClassIdentifier: 
   characterID: 2
-  characterName: Jeanie
+  characterName: Alexa
   description: A spearwoman
-  portrait: {fileID: 3536838271663695531, guid: 5f1c35ce7c4f8af4d9dfba28096849f0, type: 3}
+  portrait: {fileID: 4693267735809565405, guid: 92bf85a2bc5fc9d49ae0f4f574b1e1d1, type: 3}
   characterPrefab: {fileID: 7905986141702751442, guid: 6411eba6b6b27b5449806ef2b2a2491e, type: 3}

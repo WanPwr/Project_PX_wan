@@ -16,4 +16,4 @@ MonoBehaviour:
   characterName: Ava
   description: A swordwoman
   portrait: {fileID: 8299581309707115428, guid: 903069e09a6505d43a2e6f047a1a96e4, type: 3}
-  characterPrefab: {fileID: 7905986141702751442, guid: 6411eba6b6b27b5449806ef2b2a2491e, type: 3}
+  characterPrefab: {fileID: 7905986141702751442, guid: c8b98fafbda222d4f808c542a6033f4d, type: 3}

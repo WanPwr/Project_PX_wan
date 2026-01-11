@@ -2188,7 +2188,7 @@ RectTransform:
   m_GameObject: {fileID: 1313159250}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1.2, y: 1, z: 1}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2010759304}
@@ -2218,7 +2218,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -1062449162711012879, guid: d0bd104ba3d4abb448d15626405284bc, type: 3}
+  m_Sprite: {fileID: 7514131946827471329, guid: 3e00dec276cebc247a4c2546dba9dcf5, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3934,7 +3934,7 @@ GameObject:
   - component: {fileID: 2010759306}
   - component: {fileID: 2010759305}
   m_Layer: 5
-  m_Name: Jeanie
+  m_Name: Alexa
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
