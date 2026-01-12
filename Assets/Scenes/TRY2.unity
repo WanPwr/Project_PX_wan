@@ -405,6 +405,10 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4577979659730213953, guid: 0f46e425aad9f8b4ea00e203495e71d5, type: 3}
+      propertyPath: m_UsedByEffector
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4714851270579667951, guid: 0f46e425aad9f8b4ea00e203495e71d5, type: 3}
       propertyPath: m_Name
       value: TemplatePrefab
