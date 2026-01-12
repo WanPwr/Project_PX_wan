@@ -37,7 +37,7 @@ public class LevelController : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Next Level Name is empty in the Inspector!");
+            Debug.LogError("Next Level Nam  e is empty in the Inspector!");
         }
     }
 
