@@ -32,8 +32,13 @@ public class MenuManager : MonoBehaviour
     {
         HideAll();
         mainPanel.SetActive(true);
-    }
 
+        // Check if the instance exists AND if the AudioSource hasn't been destroyed
+        if (AudioManager.instance != null && AudioManager.instance.sfxSource != null)
+        {
+            AudioManager.instance.PlayClickSound();
+        }
+    }
     public void ShowCharacterSelect()
     {
         HideAll();
