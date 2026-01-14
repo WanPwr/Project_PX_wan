@@ -40,6 +40,6 @@ public class PauseManager : MonoBehaviour
     public void QuitToMenu()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene("Main Menu"); // change name if needed
+        SceneManager.LoadScene("MainMenu"); // change name if needed
     }
 }
