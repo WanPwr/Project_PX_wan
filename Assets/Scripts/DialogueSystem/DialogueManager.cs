@@ -11,17 +11,17 @@ public class DialogueManager : MonoBehaviour
     public TextMeshProUGUI nameText;
     public TextMeshProUGUI dialogueText;
     public Image portraitImage;
-    public GameObject spacePrompt; // Optional: Drag a "Press Space" icon here
+    public GameObject spacePrompt;
 
     [Header("Settings")]
     public float typingSpeed = 0.04f;
+    [Tooltip("Play the typing sound every X characters to avoid noise overload")]
+    public int typingSoundFrequency = 2;
 
     private Queue<DialogueLine> lines;
     private bool isTyping = false;
     private string currentFullText;
     private DialogueData currentDialogueData;
-
-    // Safety flag to prevent the 'K' interact key from skipping the first line
     private bool canAdvance = false;
 
     void Awake()
@@ -36,8 +36,6 @@ public class DialogueManager : MonoBehaviour
         currentDialogueData = dialogue;
         TogglePlayerMovement(false);
         dialogueBox.SetActive(true);
-
-        // Reset the safety flag so the initial 'K' press isn't counted
         canAdvance = false;
 
         lines.Clear();
@@ -66,6 +64,10 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
+        // --- NEW: Play "Next" SFX when advancing ---
+        if (AudioManager.instance != null)
+            AudioManager.instance.PlaySFX(AudioManager.instance.dialogueNextSound);
+
         if (spacePrompt != null) spacePrompt.SetActive(false);
         DialogueLine currentLine = lines.Dequeue();
 
@@ -80,10 +82,22 @@ public class DialogueManager : MonoBehaviour
     {
         isTyping = true;
         dialogueText.text = "";
+        int charCount = 0;
 
         foreach (char letter in sentence.ToCharArray())
         {
             dialogueText.text += letter;
+            charCount++;
+
+            // --- OPTIONAL: Subtle Typing Blip ---
+            // We play the sound every few characters so it sounds like "chatter" 
+            // instead of one continuous beep.
+            if (charCount % typingSoundFrequency == 0 && AudioManager.instance != null)
+            {
+                // You can use dialogueNextSound or a dedicated 'typing' sound here
+                AudioManager.instance.PlaySFX(AudioManager.instance.dialogueNextSound);
+            }
+
             yield return new WaitForSeconds(typingSpeed);
         }
 
@@ -125,8 +139,6 @@ public class DialogueManager : MonoBehaviour
     {
         if (!dialogueBox.activeSelf) return;
 
-        // Ensure the player has released the 'K' or 'Space' key at least once 
-        // before we allow them to click through the dialogue.
         if (!canAdvance)
         {
             if (!Input.GetKey(KeyCode.K) && !Input.GetKey(KeyCode.Space))
@@ -136,7 +148,6 @@ public class DialogueManager : MonoBehaviour
             return;
         }
 
-        // Only listen for Space key to advance
         if (Input.GetKeyDown(KeyCode.Space))
         {
             DisplayNextSentence();

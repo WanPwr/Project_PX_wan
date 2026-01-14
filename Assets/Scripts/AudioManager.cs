@@ -7,22 +7,28 @@ public class AudioManager : MonoBehaviour
     [Header("Audio Sources")]
     public AudioSource musicSource;
     public AudioSource sfxSource;
+    public AudioSource footstepSource; // Dedicated source for looping movement
 
     [Header("BGM Clips")]
     public AudioClip mainTheme;
 
-    [Header("UI SFX Clips")]
-    public AudioClip buttonHover;
+    [Header("UI & Dialogue SFX")]
     public AudioClip buttonClick;
-    public AudioClip errorPopup;
+    public AudioClip npcInteractSound;
+    public AudioClip dialogueNextSound;
 
     [Header("Game SFX Clips")]
     public AudioClip jumpSound;
     public AudioClip attackSound;
     public AudioClip respawnSound;
 
+    [Header("Movement SFX Clips")]
+    public AudioClip walkSound;
+    public AudioClip runSound;
+
     void Awake()
     {
+        // Singleton Pattern
         if (instance == null)
         {
             instance = this;
@@ -31,73 +37,99 @@ public class AudioManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
-            return; // <--- ADD THIS. Stops the script immediately.
+            return;
         }
     }
 
     void Start()
     {
-        // Check if there is a theme assigned AND if it's NOT already playing
-        // This prevents the "Restart" glitch when going back to the menu
+        // Load Saved Volumes from PlayerPrefs
+        float savedMusicVol = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
+        float savedSfxVol = PlayerPrefs.GetFloat("SFXVolume", 0.7f);
+
+        musicSource.volume = savedMusicVol;
+        sfxSource.volume = savedSfxVol;
+        footstepSource.volume = savedSfxVol;
+
+        // Start Background Music
         if (mainTheme != null)
         {
-            if (musicSource.clip == mainTheme && musicSource.isPlaying)
+            if (!(musicSource.clip == mainTheme && musicSource.isPlaying))
             {
-                // Already playing the right song, do nothing!
-                return;
+                PlayMusic(mainTheme);
             }
-            float savedVolume = PlayerPrefs.GetFloat("MusicVolume", 0.5f);
-            musicSource.volume = savedVolume;
-            // If you have a reference to the slider, you should update it too:
-            // mySlider.value = savedVolume;
-
-            PlayMusic(mainTheme);
         }
     }
 
-    // --- MUSIC LOGIC ---
+    // --- MUSIC CONTROLS ---
     public void PlayMusic(AudioClip musicClip)
     {
-        if (musicSource == null) return;
-
+        if (musicSource == null || musicClip == null) return;
         musicSource.clip = musicClip;
         musicSource.loop = true;
         musicSource.Play();
     }
 
-    // --- SFX LOGIC ---
+    public void StopMusic()
+    {
+        musicSource.Stop();
+    }
+
+    // --- ONE-SHOT SFX CONTROLS (Jumps, Clicks, Attacks) ---
     public void PlaySFX(AudioClip sfxClip)
     {
-        // CRITICAL FIX: Check if sfxSource still exists before playing
         if (sfxClip != null && sfxSource != null)
         {
             sfxSource.PlayOneShot(sfxClip);
         }
     }
 
-    // Add this to your AudioManager.cs
+    // --- MOVEMENT SFX CONTROLS (Looping) ---
+    public void PlayFootsteps(bool isRunning)
+    {
+        if (footstepSource == null || walkSound == null || runSound == null) return;
+
+        AudioClip selectedClip = isRunning ? runSound : walkSound;
+
+        // Change clip only if it's different to prevent "stuttering" restarts
+        if (footstepSource.clip != selectedClip)
+        {
+            footstepSource.clip = selectedClip;
+            footstepSource.Play();
+        }
+        else if (!footstepSource.isPlaying)
+        {
+            footstepSource.Play();
+        }
+
+        // Slight pitch increase when running makes it feel more energetic
+        footstepSource.pitch = isRunning ? 1.2f : 1.0f;
+    }
+
+    public void StopFootsteps()
+    {
+        if (footstepSource != null && footstepSource.isPlaying)
+        {
+            footstepSource.Stop();
+        }
+    }
+
+    // --- VOLUME SETTINGS (Call these from your Options Menu) ---
     public void SetMusicVolume(float volume)
     {
-        // Clamp the value to be safe
         float finalVolume = Mathf.Clamp(volume, 0f, 1f);
-
         musicSource.volume = finalVolume;
-
-        // Optional: If the volume is basically zero, force a mute 
-        // to prevent "ghost" sounds
-        musicSource.mute = (finalVolume <= 0.001f);
-
         PlayerPrefs.SetFloat("MusicVolume", finalVolume);
     }
 
     public void SetSFXVolume(float volume)
     {
-        sfxSource.volume = volume;
+        float finalVolume = Mathf.Clamp(volume, 0f, 1f);
+        sfxSource.volume = finalVolume;
+        footstepSource.volume = finalVolume;
+        PlayerPrefs.SetFloat("SFXVolume", finalVolume);
     }
 
-
-
-    // Helper methods for Inspector/Buttons
-    public void PlayHoverSound() => PlaySFX(buttonHover);
+    // Helper methods for easy button linking
     public void PlayClickSound() => PlaySFX(buttonClick);
 }

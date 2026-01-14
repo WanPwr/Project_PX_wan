@@ -139,7 +139,6 @@ GameObject:
   - component: {fileID: 7535746955463702372}
   - component: {fileID: 2455542852883024625}
   - component: {fileID: 4523556504749275143}
-  - component: {fileID: 2804095539935879207}
   m_Layer: 0
   m_Name: Player2
   m_TagString: Player
@@ -296,9 +295,6 @@ MonoBehaviour:
   landingThreshold: 0.1
   attackKey: 106
   attackHitbox: {fileID: 3986571107340582227}
-  jumpSound: {fileID: 0}
-  attackSound: {fileID: 0}
-  movementSound: {fileID: 0}
 --- !u!61 &2455542852883024625
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -357,17 +353,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a470b0dc83220fc4db48d8e53092eef8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2804095539935879207
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7905986141702751442}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f23a20b1f85c7e34aafc3dd2e6ecc44a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  itemName: Gem
-  pickupKey: 108

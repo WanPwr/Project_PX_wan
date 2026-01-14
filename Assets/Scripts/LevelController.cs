@@ -7,44 +7,46 @@ public class LevelController : MonoBehaviour
     public GameObject endScreenPanel;
 
     [Header("Scene Configuration")]
-    [Tooltip("Type the exact name of your next scene here")]
+    [Tooltip("Exact name of the next stage (e.g., Stage2)")]
     public string nextLevelName;
-
-    [Tooltip("Type the exact name of your main menu scene")]
     public string homeMenuName = "MainMenu";
 
     void Start()
     {
-        // Ensure panel is hidden when the level starts
+        // Always ensure the game is unpaused and panel is hidden at start
+        Time.timeScale = 1f;
         if (endScreenPanel != null) endScreenPanel.SetActive(false);
     }
 
     public void ShowEndScreen()
     {
-        endScreenPanel.SetActive(true);
-        Time.timeScale = 0f; // Pause the game
+        if (endScreenPanel != null)
+        {
+            endScreenPanel.SetActive(true);
+            Time.timeScale = 0f; // Freeze game world logic
+            
+            // SFX for winning
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlayClickSound(); 
+        }
     }
-
-    // --- Button Functions ---
 
     public void OnClickNextStage()
     {
-        Time.timeScale = 1f; // Unpause before loading!
-
+        Time.timeScale = 1f; 
         if (!string.IsNullOrEmpty(nextLevelName))
         {
             SceneManager.LoadScene(nextLevelName);
         }
         else
         {
-            Debug.LogError("Next Level Nam  e is empty in the Inspector!");
+            Debug.LogError("Next Level Name is missing in Inspector!");
         }
     }
 
     public void OnClickRestart()
     {
         Time.timeScale = 1f;
-        // This is a "flexible" way to reload whatever scene you are currently in
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 

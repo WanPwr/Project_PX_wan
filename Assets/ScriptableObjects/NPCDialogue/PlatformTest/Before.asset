@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcbf41069984956439c6e2410f5d1d2a, type: 3}
+  m_Name: Before
+  m_EditorClassIdentifier: 
+  conversation:
+  - characterName: Ava
+    characterPortrait: {fileID: -7593513710148612255, guid: 5e116ce8cc318d742bcb747ba7948e4c, type: 3}
+    text: Hey. Can help me to get those pointy ahh looking coin?
+  - characterName: Ava
+    characterPortrait: {fileID: -7593513710148612255, guid: 5e116ce8cc318d742bcb747ba7948e4c, type: 3}
+    text: I am too lazy.
+  - characterName: Ava
+    characterPortrait: {fileID: -7593513710148612255, guid: 5e116ce8cc318d742bcb747ba7948e4c, type: 3}
+    text: Aight.
+  givesQuest: 1
+  questItemName: Triangle Coin
+  questAmount: 2
+  questDescription: Collect 2 Triangle Coin on the other side of the platform

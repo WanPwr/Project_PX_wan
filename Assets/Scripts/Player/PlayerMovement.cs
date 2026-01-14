@@ -30,11 +30,6 @@ public class PlayerMovement : MonoBehaviour
     public KeyCode attackKey = KeyCode.J;
     public GameObject attackHitbox;
 
-    [Header("Audio Settings")]
-    public AudioClip jumpSound;
-    public AudioClip attackSound;
-    public AudioClip movementSound;
-
     private bool isAttacking = false;
     private Rigidbody2D rb;
     private Animator anim;
@@ -54,14 +49,16 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // --- DIALOGUE LOCK CHECK ---
-        // If talking, we kill all input and stop horizontal velocity
         if (isLockedByDialogue)
         {
             moveInput = 0;
             isRunning = false;
             rb.linearVelocity = new Vector2(0, rb.linearVelocity.y);
             anim.SetFloat("Speed", 0);
-            return; // Skip the rest of the update
+
+            // Stop footsteps if dialogue starts mid-walk
+            if (AudioManager.instance != null) AudioManager.instance.StopFootsteps();
+            return;
         }
 
         // --- GROUND CHECK ---
@@ -89,12 +86,19 @@ public class PlayerMovement : MonoBehaviour
             isRunning = false;
         }
 
+        // --- FOOTSTEP AUDIO LOGIC ---
+        HandleMovementAudio();
+
         // --- ATTACK ---
         if (Input.GetKeyDown(attackKey) && isGrounded && !isAttacking)
         {
             isAttacking = true;
             anim.SetBool("isAttacking", true);
             anim.SetTrigger("Attack");
+
+            // Play Attack SFX
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(AudioManager.instance.attackSound);
         }
 
         // --- JUMP ---
@@ -104,6 +108,10 @@ public class PlayerMovement : MonoBehaviour
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
                 jumpCount++;
+
+                // Play Jump SFX
+                if (AudioManager.instance != null)
+                    AudioManager.instance.PlaySFX(AudioManager.instance.jumpSound);
             }
 
             if (Input.GetButtonUp("Jump") && rb.linearVelocity.y > 0)
@@ -125,18 +133,29 @@ public class PlayerMovement : MonoBehaviour
         anim.speed = isRunning ? 1.6f : 1f;
     }
 
+    void HandleMovementAudio()
+    {
+        if (AudioManager.instance == null) return;
+
+        // Condition: Player is grounded and actually moving horizontally
+        if (isGrounded && Mathf.Abs(rb.linearVelocity.x) > 0.1f && !isAttacking)
+        {
+            AudioManager.instance.PlayFootsteps(isRunning);
+        }
+        else
+        {
+            AudioManager.instance.StopFootsteps();
+        }
+    }
+
     void FixedUpdate()
     {
         if (isAttacking || isLockedByDialogue) return;
 
         float targetSpeed = (isRunning ? runSpeed : walkSpeed) * moveInput;
 
-        // --- THE FIX ---
-        // If there is no input and we are parented to something (like a platform), 
-        // let the physics engine/parenting handle the horizontal movement.
         if (Mathf.Abs(moveInput) < 0.01f && transform.parent != null)
         {
-            // We do nothing here, allowing the platform's movement to carry us
             return;
         }
 
@@ -146,16 +165,15 @@ public class PlayerMovement : MonoBehaviour
 
         rb.linearVelocity = new Vector2(rb.linearVelocity.x + movement, rb.linearVelocity.y);
 
-        // --- BETTER FALL ---
         if (rb.linearVelocity.y < 0)
         {
             rb.linearVelocity += Vector2.up * Physics2D.gravity.y * (fallMultiplier - 1) * Time.fixedDeltaTime;
         }
     }
+
     void Flip()
     {
         facingRight = !facingRight;
-        // Optimization: Flipping the transform scale is better if you have hitboxes attached
         Vector3 scaler = transform.localScale;
         scaler.x *= -1;
         transform.localScale = scaler;
@@ -168,17 +186,8 @@ public class PlayerMovement : MonoBehaviour
         DeActivateHitbox();
     }
 
-    public void ActivateHitbox()
-    {
-        if (attackHitbox != null)
-            attackHitbox.SetActive(true);
-    }
-
-    public void DeActivateHitbox()
-    {
-        if (attackHitbox != null)
-            attackHitbox.SetActive(false);
-    }
+    public void ActivateHitbox() => attackHitbox?.SetActive(true);
+    public void DeActivateHitbox() => attackHitbox?.SetActive(false);
 
     void OnDrawGizmosSelected()
     {

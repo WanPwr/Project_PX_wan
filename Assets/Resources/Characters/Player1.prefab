@@ -257,7 +257,7 @@ Rigidbody2D:
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_GravityScale: 2
-  m_Material: {fileID: 6200000, guid: 0a7bd4c084393f043b39ac139a80a833, type: 2}
+  m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -296,9 +296,6 @@ MonoBehaviour:
   landingThreshold: 0.1
   attackKey: 106
   attackHitbox: {fileID: 3986571107340582227}
-  jumpSound: {fileID: 0}
-  attackSound: {fileID: 0}
-  movementSound: {fileID: 0}
 --- !u!61 &2455542852883024625
 BoxCollider2D:
   m_ObjectHideFlags: 0
