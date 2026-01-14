@@ -9,8 +9,8 @@ public class LevelGoal : MonoBehaviour
     public RectTransform objectivePanel;
 
     [Header("Slide Settings")]
-    public Vector2 hiddenPosition = new Vector2(600, 0); // Far right
-    public Vector2 visiblePosition = new Vector2(-20, 0); // Anchored right
+    public Vector2 hiddenPosition = new Vector2(600, 0);
+    public Vector2 visiblePosition = new Vector2(-20, 0);
     public float slideDuration = 0.5f;
 
     [Header("Current Goal Data")]
@@ -22,19 +22,19 @@ public class LevelGoal : MonoBehaviour
 
     void Start()
     {
-        // Force the panel to start off-screen
         if (objectivePanel != null)
             objectivePanel.anchoredPosition = hiddenPosition;
 
+        FindPlayer();
         UpdateObjectiveUI();
     }
 
-    public void AssignPlayer(GameObject playerObj)
+    void FindPlayer()
     {
-        player = playerObj.GetComponent<PlayerInventory>();
+        GameObject pObj = GameObject.FindGameObjectWithTag("Player");
+        if (pObj != null) player = pObj.GetComponent<PlayerInventory>();
     }
 
-    // Called by DialogueManager at the end of a "givesQuest" dialogue
     public void SetNewObjective(string item, int amount, string description)
     {
         targetItem = item;
@@ -42,23 +42,19 @@ public class LevelGoal : MonoBehaviour
         objectiveDescription = description;
 
         UpdateObjectiveUI();
-
         StopAllCoroutines();
         StartCoroutine(SlidePanel(visiblePosition));
     }
 
-    // Called by DialogueTrigger when the NPC acknowledges the quest is done
     public void ClearObjective()
     {
         targetItem = "None";
         neededAmount = 0;
         objectiveDescription = "Quest Complete!";
-
         UpdateObjectiveUI();
 
-        // Wait 1 second so player sees "Complete!" then slide away
         StopAllCoroutines();
-        StartCoroutine(WaitThenSlide(1.5f, hiddenPosition));
+        StartCoroutine(WaitThenSlide(2.0f, hiddenPosition));
     }
 
     IEnumerator WaitThenSlide(float delay, Vector2 target)
@@ -71,7 +67,6 @@ public class LevelGoal : MonoBehaviour
     {
         float time = 0;
         Vector2 startPos = objectivePanel.anchoredPosition;
-
         while (time < slideDuration)
         {
             objectivePanel.anchoredPosition = Vector2.Lerp(startPos, targetPos, time / slideDuration);
@@ -81,36 +76,47 @@ public class LevelGoal : MonoBehaviour
         objectivePanel.anchoredPosition = targetPos;
     }
 
-    public void RefreshProgress()
+    void Update()
     {
-        UpdateObjectiveUI();
+        if (player == null) FindPlayer();
+
+        if (player != null && targetItem != "None")
+        {
+            UpdateObjectiveUI();
+            if (player.GetItemCount(targetItem) >= neededAmount)
+            {
+                objectiveDescription = "Goal Reached! Return to NPC.";
+            }
+        }
     }
 
     void UpdateObjectiveUI()
     {
         if (objectiveText != null)
         {
-            objectiveText.text = $"Goal: {objectiveDescription}";
-
-            // Show 0/5 etc. only if a quest is active
-            if (targetItem != "None" && neededAmount > 0 && player != null)
+            string progress = "";
+            if (targetItem != "None" && player != null)
             {
-                objectiveText.text += $"\nProgress: {player.GetItemCount(targetItem)}/{neededAmount}";
+                progress = $"\nProgress: {player.GetItemCount(targetItem)}/{neededAmount}";
             }
+            objectiveText.text = $"Goal: {objectiveDescription}{progress}";
         }
     }
 
-    void Update()
+    // Add this to LevelGoal.cs so PlayerSpawner can call it
+    public void AssignPlayer(GameObject playerObj)
     {
-        // Constantly check progress if a quest is active
-        if (player != null && targetItem != "None")
+        if (playerObj != null)
         {
-            UpdateObjectiveUI();
-
-            if (player.GetItemCount(targetItem) >= neededAmount)
-            {
-                objectiveDescription = "Items Collected! Talk to NPC.";
-            }
+            player = playerObj.GetComponent<PlayerInventory>();
+            Debug.Log("LevelGoal: Player manually assigned by Spawner.");
         }
+    }
+
+    // Add this to your LevelGoal.cs script
+    public void RefreshProgress()
+    {
+        UpdateObjectiveUI();
+        Debug.Log("LevelGoal: UI Refreshed via Pickup.");
     }
 }

@@ -2,30 +2,20 @@ using UnityEngine;
 
 public class DoorScript : MonoBehaviour
 {
-    public Vector3 openOffset = new Vector3(0, 3, 0); // How far the door moves up
-    public float speed = 2f;
+    public bool isOpened = false;
 
-    private Vector3 closedPosition;
-    private Vector3 targetPosition;
-    private bool shouldOpen = false;
-
-    void Start()
-    {
-        closedPosition = transform.position;
-        targetPosition = closedPosition + openOffset;
-    }
-
-    void Update()
-    {
-        if (shouldOpen)
-        {
-            transform.position = Vector3.MoveTowards(transform.position, targetPosition, speed * Time.deltaTime);
-        }
-    }
-
-    // This is the function your Universal Trigger will call
     public void OpenDoor()
     {
-        shouldOpen = true;
+        if (isOpened) return;
+        isOpened = true;
+
+        // Simple Way: Disable the collider and fade the sprite
+        Collider2D col = GetComponent<Collider2D>();
+        if (col != null) col.enabled = false;
+
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (sr != null) sr.color = new Color(1, 1, 1, 0.3f); // Fades it slightly
+
+        Debug.Log("Quest complete: Door is now open!");
     }
 }

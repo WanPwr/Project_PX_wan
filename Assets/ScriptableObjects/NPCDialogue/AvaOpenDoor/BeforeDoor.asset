@@ -19,7 +19,13 @@ MonoBehaviour:
   - characterName: Ava
     characterPortrait: {fileID: -2275656376681654536, guid: 0ba6ae71c7a419947a1054947a86cd47, type: 3}
     text: Hi, Joe.
-  givesQuest: 0
-  questItemName: 
-  questAmount: 0
-  questDescription: 
+  - characterName: Ava
+    characterPortrait: {fileID: -2275656376681654536, guid: 0ba6ae71c7a419947a1054947a86cd47, type: 3}
+    text: Find me 1 coin to open the door
+  - characterName: Joe
+    characterPortrait: {fileID: 1084495889696105424, guid: 5d50363170630fc48a90f7e723181406, type: 3}
+    text: Okay
+  givesQuest: 1
+  questItemName: Coin
+  questAmount: 1
+  questDescription: Collect coin and give it to Ava

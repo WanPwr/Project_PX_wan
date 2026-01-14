@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dcbf41069984956439c6e2410f5d1d2a, type: 3}
+  m_Name: AfterDoor
+  m_EditorClassIdentifier: 
+  conversation:
+  - characterName: Ava
+    characterPortrait: {fileID: -928115101879928800, guid: acd2da2580297324ea64de9976746883, type: 3}
+    text: Thanks. I'll open the door for you.
+  - characterName: Ava
+    characterPortrait: {fileID: 1084495889696105424, guid: c2b893ace0a4b35479e356b6f48f5ac2, type: 3}
+    text: Nice
+  givesQuest: 0
+  questItemName: 
+  questAmount: 0
+  questDescription: 

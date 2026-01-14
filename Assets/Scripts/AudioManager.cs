@@ -23,18 +23,15 @@ public class AudioManager : MonoBehaviour
 
     void Awake()
     {
-        // --- THE FIX FOR MISSING REFERENCE ---
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
         }
-        else if (instance != this)
+        else
         {
-            // If another instance already exists, destroy this one immediately
-            // and stop this script from running further.
             Destroy(gameObject);
-            return;
+            return; // <--- ADD THIS. Stops the script immediately.
         }
     }
 
