@@ -22,42 +22,54 @@ public class CharacterSelectManager : MonoBehaviour
 
     public void SelectCharacter(CharacterData character)
     {
+        // TRIGGER: Sound when clicking a character icon
+        PlayClick();
+
         selectedCharacter = character;
 
-        // Update UI
         if (portraitImage != null) portraitImage.sprite = character.portrait;
         if (nameText != null) nameText.text = character.characterName;
         if (descriptionText != null) descriptionText.text = character.description;
 
-        // Store selection for next scene
         PlayerPrefs.SetInt("SelectedCharacter", character.characterID);
         PlayerPrefs.Save();
-
-        Debug.Log($"Selected Character: {character.characterName}");
     }
 
-    public CharacterData GetSelectedCharacter()
-    {
-        return selectedCharacter;
-    }
-
-    // --- MODIFIED: Now transitions to Level Select instead of Scene ---
     public void OnStartButtonClicked()
     {
+        // TRIGGER: Sound when confirming character
+        PlayClick();
+
         if (selectedCharacter == null)
         {
             Debug.LogWarning("No character selected!");
             return;
         }
 
-        // Talk to the MenuManager to swap panels
         if (MenuManager.instance != null)
         {
             MenuManager.instance.ShowLevelSelect();
         }
-        else
+    }
+
+    public void OnBackToMainMenu()
+    {
+        // TRIGGER: Sound when going back
+        PlayClick();
+
+        ClearSelection();
+
+        // Note: If MenuManager exists, it's better to use MenuManager.instance.ShowMainMenu()
+        // so the scene doesn't reload and the audio doesn't glitch.
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    // --- HELPER FUNCTION ---
+    private void PlayClick()
+    {
+        if (AudioManager.instance != null)
         {
-            Debug.LogError("MenuManager not found in scene!");
+            AudioManager.instance.PlayClickSound();
         }
     }
 
@@ -70,22 +82,5 @@ public class CharacterSelectManager : MonoBehaviour
 
         PlayerPrefs.DeleteKey("SelectedCharacter");
         PlayerPrefs.Save();
-        Debug.Log("Character selection cleared.");
-    }
-
-    public void OnBackToMainMenu()
-    {
-        ClearSelection();
-        // If you are using MenuManager, you can call MenuManager.instance.ShowMainMenu() 
-        // instead of reloading the scene to keep it fast.
-        SceneManager.LoadScene("MainMenu");
-    }
-
-    public void DebugSelectedCharacter()
-    {
-        if (selectedCharacter != null)
-            Debug.Log($"Currently Selected Character: {selectedCharacter.characterName}");
-        else
-            Debug.Log("No character currently selected.");
     }
 }

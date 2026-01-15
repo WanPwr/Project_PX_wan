@@ -28,7 +28,6 @@ public class AudioManager : MonoBehaviour
 
     void Awake()
     {
-        // Singleton Pattern
         if (instance == null)
         {
             instance = this;
@@ -36,8 +35,10 @@ public class AudioManager : MonoBehaviour
         }
         else
         {
+            // IMPORTANT: Disable the object so it stops running logic 
+            // while waiting to be destroyed at the end of the frame.
+            gameObject.SetActive(false);
             Destroy(gameObject);
-            return;
         }
     }
 
