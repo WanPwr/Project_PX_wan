@@ -7227,11 +7227,11 @@ PrefabInstance:
     - target: {fileID: 3457815510419283409, guid: 01c3c3780fe38844c8566621d2ff9e87, type: 3}
       propertyPath: jumpSound
       value: 
-      objectReference: {fileID: 8300000, guid: 0ad2efd7daaaa2047a6883eea0411a84, type: 3}
+      objectReference: {fileID: 8300000, guid: 6443a4ad35a6e384091f468d3829aeec, type: 3}
     - target: {fileID: 3457815510419283409, guid: 01c3c3780fe38844c8566621d2ff9e87, type: 3}
       propertyPath: attackSound
       value: 
-      objectReference: {fileID: 8300000, guid: 2472ff3c3b87cab4a9da1b3958335f12, type: 3}
+      objectReference: {fileID: 8300000, guid: f553d4230b26d8f4480d7cfa9492bb88, type: 3}
     - target: {fileID: 3457815510419283409, guid: 01c3c3780fe38844c8566621d2ff9e87, type: 3}
       propertyPath: respawnSound
       value: 
